@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<html>
+<div class="simple"><script type="text/x-sage">
+
+pretty_print(html('<h2><font face="Comic Sans MS">Approximate Integrals</font>'))
+
+@interact(layout=[['g'],['domain'],['n'],['technique']])
+def _(
+g=input_box(sin(x),label='f(x)=',width=30),
+domain=input_box((0,2*pi),width=30, label='Domain'),
+n=slider(2,100,1,10, label='n'),
+technique=selector(['Left Sum','Right Sum','Midpoint Sum','Random Sum','Trapezoid Sum'],buttons=true, label='Technique')):
+    (a,b)=domain
+    f(x)=g
+    dx=((b-a)/n)
+    soln=integrate(f(x),x,a,b).n()
+    
+    if technique == 'Left Sum':
+        left=add([f(a+i*dx)*dx for i in range(n)])
+        ans=left
+        p=add([line([(a+i*dx,0),(a+i*dx,f(a+i*dx)),(a+(i+1)*dx,f(a+i*dx)),(a+(i+1)*dx,0)]) for i in range(n)])
+    elif technique == 'Right Sum':
+        right=add([f(a+(i+1)*dx)*dx for i in range(n)])
+        ans=right
+        p=add([line([(a+(i)*dx,0),(a+(i)*dx,f(a+(i+1)*dx)),(a+(i+1)*dx,f(a+(i+1)*dx)),(a+(i+1)*dx,0)]) for i in range(n)])
+    elif technique == 'Midpoint Sum':    
+        mid=add([f(a+(i+1/2)*dx)*dx for i in range(n)])
+        ans=mid
+        p=add([line([(a+(i)*dx,0),(a+(i)*dx,f(a+(i+1/2)*dx)),(a+(i+1)*dx,f(a+(i+1/2)*dx)),(a+(i+1)*dx,0)]) for i in range(n)])
+    elif technique == 'Random Sum': 
+        stars = [random() for i in range(n)]
+        mid=add([f(a+(i+stars[i])*dx)*dx for i in range(n)])
+        ans=mid
+        p=add([line([(a+(i)*dx,0),(a+(i)*dx,f(a+(i+stars[i])*dx)),(a+(i+1)*dx,f(a+(i+stars[i])*dx)),(a+(i+1)*dx,0)]) for i in range(n)])
+    else:
+        left=add([f(a+i*dx)*dx for i in range(n)])
+        right=add([f(a+(i+1)*dx)*dx for i in range(n)])
+        trap=(left+right)/2
+        ans=trap
+        p=add([line([(a+(i)*dx,0),(a+(i)*dx,f(a+(i)*dx)),(a+(i+1)*dx,f(a+(i+1)*dx)),(a+(i+1)*dx,0)]) for i in range(n)])
+            
+    p+=plot(f(x),(x,a,b),color='red',thickness=1)
+    show(p,figsize=5, title=r'$\int_{%s}^{%s} f(x)\, dx= %s$. $Approximation$ $is$ $%s$.'%(latex(a),latex(b), soln.n(digits=4), ans.n(digits=3)))
+    
+</script></div>
+</html>
