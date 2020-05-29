@@ -1,0 +1,133 @@
+---
+title: "SageMath in R Markdown: One More Love Story"
+author: | 
+  | Yuanting Lu
+  | Mercer University
+date: "May 28, 2020"
+output: html_document
+---
+<style type="text/css">
+
+body{ /* Normal  */
+      font-size: 20px;
+      font-family: "Corbel";
+  }
+td {  /* Table  */
+  font-size: 8px;
+}
+h1.title {
+  font-size: 38px;
+  color: DarkRed;
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: DarkBlue;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: DarkBlue;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  font-family: "Times New Roman", Times, serif;
+  color: DarkBlue;
+}
+code.r{ /* Code block */
+    font-size: 12px;
+    font-family: "Candara";
+}
+pre { /* Code block - determines code spacing between lines */
+    font-size: 14px;
+}
+</style>
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+1. Create a blank sageHeader.html file, then paste the following HTML codes and save the file. The codes defines two HTML classes:
+* The class "compute" has a Sage code editor, an evaluation button and the output panel.
+* The class "simple" only displays the output panel.
+The codes also send all calculations to [**SageMathCells** server](https://sagecell.sagemath.org/). Thus, the local installation of Sage is not needed.
+```{r eval=FALSE, echo=TRUE}
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <script src="https://sagecell.sagemath.org/static/embedded_sagecell.js"></script>
+    <script>$(function () {
+    sagecell.makeSagecell({inputLocation: 'div.compute',
+                                  linked: 'false',
+                                autoeval: 'false',
+                          evalButtonText: 'Evaluate'});
+    sagecell.makeSagecell({inputLocation:  'div.simple',
+			                          autoeval: 'true',
+			                              hide: ['editor','evalButton', 'permalink']});
+    });
+    </script>
+  </head>
+</html>
+```
+
+2. Create a R Markdown file and Source the sageHeader.html file in a R chunk using the **htmltools** package. Suppose the R Markdown file and the html file are in the same folder:
+```{r eval=TRUE, echo=FALSE}
+htmltools::includeHTML("sageHeader.html")
+```
+````markdown
+`r ''````{r eval=TRUE, echo=FALSE}
+htmltools::includeHTML("~/Desktop/sageHeader.html")
+```
+````
+
+3. If we'd like the audience to type/modify the Sage codes, use the "**compute**" class. Insert the following HTML codes in the R Markdown document (don't use any code chunk) to get a Sage editor and an evaluation buttonin. (There is a button in the far right of the editor, which makes the editor full screen for easy editing.)
+```{r eval = FALSE, echo=TRUE}
+<html>
+<div class="compute"><script type="text/x-sage">
+factorial(5)
+</script></div>
+</html>
+```
+<html>
+<div class="compute"><script type="text/x-sage">
+factorial(5)
+</script></div>
+</html>
+
+4. If we only want to display a dynamic output (e.g., a 3D graph),, use the "**simple**" class. The following HTML codes in the R Markdown document (don't use any code chunk) will only display the result of the Sage codes.  (It may take a while for the image to show up. Refresh the browser might help.)
+```{r eval=FALSE, echo=TRUE}
+<html>
+<div class="simple"><script type="text/x-sage">
+# Declare variables
+var('u,v') 
+# Choose the jet colormap. 
+color_map = colormaps.jet 
+# c is the color function, whose range must be normalized (converted to between 0 and 1). 
+def c(u,v): return ((u^2-v^2)+1)/2 
+# 3d plot and settings
+surf = parametric_plot3d( [u, v, u^2-v^2], (u, -1, 1), (v, -1, 1), color = (c, color_map)) 
+show(surf, viewer='threejs', frame=False) 
+</script></div>
+</html>
+```
+<html>
+<div class="simple"><script type="text/x-sage">
+var('u,v'); color_map = colormaps.jet          
+def c(u,v): return ((u^2-v^2)+1)/2 
+surf = parametric_plot3d( [u, v, u^2-v^2], (u, -1, 1), (v, -1, 1), color = (c, color_map))
+show(surf, viewer='threejs', frame=False)
+</script></div>
+</html>
+
+5. Finally, don't forget the wonderful interactive components of Sage. 
+```{r eval=TRUE, echo=FALSE}
+htmltools::includeHTML("riemannsum.html")
+```
+
+
+# References
+* [SageMath and 3D Models in Webpages, by Simon Willerton](https://golem.ph.utexas.edu/category/2017/12/sagemath_and_3d_models_in_webp.html)
+* [SageMath Widgets, by Jeff Denny and Yuanting Lu](http://sagewidgets.pbworks.com/w/page/67137878/FrontPage)
+* [Dr. Christian Bar's colletion, University of Potsdam, Germany](https://www.cbaer.eu/joomla/index.php/en/mathematics/practice)
+* [Embedding Sage to HTML, by SageMath](https://sagecell.sagemath.org/static/about.html?v=aae960fc94126c35e9d68d7f5d2040a7)
+* [R Markdown font size, answered by Mike Wise on StackOverFlow ](https://stackoverflow.com/questions/30446905/rmarkdown-font-size-and-header/30447045)
+* [Including verbatim R code chunks inside R Markdown, by Nathan Stephens](https://support.rstudio.com/hc/en-us/articles/360018181633-Including-verbatim-R-code-chunks-inside-R-Markdown)
